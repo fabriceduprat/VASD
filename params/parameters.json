@@ -1,0 +1,22 @@
+{
+"VERSION": "3.0",
+"BASE_DIR": "/home/data/vasd_data",
+"CAMERA_ADDRESS": [
+"rtsp://mylog1:mypass1@111.222.333.444:554/12",
+"rtsp://mylog2:mypass2@111.222.333.445/cam/realmonitor?channel=1&subtype=0",
+"rtsp://mylog2:mypass2@111.222.333.445/cam/realmonitor?channel=2&subtype=0",
+"rtsp://mylog2:mypass2@111.222.333.445/cam/realmonitor?channel=3&subtype=0"
+],
+"CAMERA_FPS": [
+"12",
+"15",
+"15",
+"15"
+],
+"AUDIO": [
+1,
+0,
+0,
+0
+]
+}
