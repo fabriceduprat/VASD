@@ -12,7 +12,6 @@ from functools import partial
 import cv2
 import schedule
 from colorama import Fore, Style, init
-
 import video_analysis
 import vasd_functions as vf
 
@@ -21,9 +20,9 @@ import vasd_functions as vf
 def analysis(dir_serie):
     "Analyse video files present in vf.DIR_IN_PROGRESS and move files (videos and CSV files) to dir_serie"
 
-    print(f"PROC_ANALYSIS Is alive in analysis? {vf.PROC_ANALYSIS.is_alive()}")
+    print(f"DEBUG PROC_ANALYSIS Is alive in analysis? {vf.PROC_ANALYSIS.is_alive()}")
     while True:
-        print(f"PROC_ANALYSIS Is alive in analysis? {vf.PROC_ANALYSIS.is_alive()}")
+        print(f"DEBUG PROC_ANALYSIS Is alive in analysis? {vf.PROC_ANALYSIS.is_alive()}")
         print(f"DEBUG {vf.get_formatted_datetime_now()}, <analysis> while loop starts")
         all_files_ready = [] # List of all files (videos, csv, and wav files) ready to be transfered
         files_size_1 = [] # List of the videos size after first check
@@ -91,12 +90,12 @@ def analysis(dir_serie):
                     try:
                         os.rename(os.path.join(vf.DIR_IN_PROGRESS, file), os.path.join(dir_files, file))
                     except OSError as err:
-                        print(f"Error when trying to move <{file}> from <{vf.DIR_IN_PROGRESS}> to <{dir_files}>")
+                        print(f"{vf.get_formatted_datetime_now()} Error when trying to move <{file}> from <{vf.DIR_IN_PROGRESS}> to <{dir_files}>")
                         print(f"Error: {err}")
                     try:
                         os.rename(os.path.join(vf.DIR_IN_PROGRESS, file[:-4]), os.path.join(dir_files, file[:-4]))
                     except OSError as err:
-                        print(f"Error when trying to move <{file[:-4]}> from <{vf.DIR_IN_PROGRESS}> to <{dir_files}>")
+                        print(f"{vf.get_formatted_datetime_now()} Error when trying to move <{file[:-4]}> from <{vf.DIR_IN_PROGRESS}> to <{dir_files}>")
                         print(f"Error: {err}")
 
         time.sleep(300) # wait 5 min before rechecking files present in "in_progress" directory (while loop)
@@ -105,7 +104,7 @@ def analysis(dir_serie):
 def start_analysis(dir_serie, total_hours):
     "Runs an analysis process (multiprocessing module)"
 
-    print(Style.BRIGHT + Fore.GREEN + "####### VASD ###### Start analysis process #######")
+    print(Style.BRIGHT + Fore.GREEN + f"###### {vf.get_formatted_datetime_now()} ###### Start analysis process #######")
     print(Style.RESET_ALL)
     vf.PROC_ANALYSIS = multiprocessing.Process(target=analysis,
                                                args=(dir_serie,)
@@ -117,11 +116,6 @@ def start_analysis(dir_serie, total_hours):
 def stop_analysis(time_sec):
     "Stop the analysis process started by start_analysis()"
 
-    # if time_sec:
-    #     print(Style.BRIGHT + Fore.RED + f"###### VASD ###### Analysis will stop in {time_sec} s ######")
-    # else:
-    #     print(Style.BRIGHT + Fore.RED + f"###### VASD ###### Analysis is stopped by user ######")
-    # print(Style.RESET_ALL)
     time.sleep(time_sec)
     # print(f"DEBUG PROC_ANALYSIS Is still alive after time sleep in stop_analysis? {vf.PROC_ANALYSIS.is_alive()}")
     if vf.PROC_ANALYSIS:
@@ -165,8 +159,8 @@ def acquire_left(dir_serie, channel_id, mouse_id):
     if vf.CAMERA_TYPE[channel_id] == "Video+Audio":
         ffoutput1 = f"-map [out_L] -map 0:a:0 -t {'01:00:00' } -r {vf.CAMERA_FPS[channel_id]} -y -c:v libx265 "         # output video+audio parameters
     subprocess.Popen(ffinput + fffilter + ffoutput1 + ffoutput2 + ffoutput3, shell=True)
-    print("DEBUG "+ffinput+fffilter+ffoutput1+ffoutput2+ffoutput3)
-    print(f"DEBUG {vf.get_formatted_datetime_now()}, <acquire_left> started with L_{mouse_id}_CAM{channel_id}_{videodate}.mp4")
+    # print("DEBUG "+ffinput+fffilter+ffoutput1+ffoutput2+ffoutput3)
+    # print(f"DEBUG {vf.get_formatted_datetime_now()}, <acquire_left> started with L_{mouse_id}_CAM{channel_id}_{videodate}.mp4")
 
 
 def acquire_right(dir_serie, channel_id, mouse_id):
@@ -190,8 +184,8 @@ def acquire_right(dir_serie, channel_id, mouse_id):
     if vf.CAMERA_TYPE[channel_id] == "Video+Audio":
         ffoutput1 = f'-map [out_R] -map 0:a:0 -t {"01:00:00"} -r {vf.CAMERA_FPS[channel_id]} -y -c:v libx265 '                              # output video+audio parameters
     subprocess.Popen(ffinput + fffilter + ffoutput1 + ffoutput2 + ffoutput3, shell=True)
-    print("DEBUG "+ffinput+fffilter+ffoutput1+ffoutput2+ffoutput3)
-    print(f"DEBUG {vf.get_formatted_datetime_now()}, <acquire_right> started with R_{mouse_id}_CAM{channel_id}_{videodate}.mp4")
+    # print("DEBUG "+ffinput+fffilter+ffoutput1+ffoutput2+ffoutput3)
+    # print(f"DEBUG {vf.get_formatted_datetime_now()}, <acquire_right> started with R_{mouse_id}_CAM{channel_id}_{videodate}.mp4")
 
 
 def acquire_both(dir_serie, channel_id, mouse_id):
@@ -209,8 +203,8 @@ def acquire_both(dir_serie, channel_id, mouse_id):
     outputfile = os.path.join(vf.DIR_IN_PROGRESS, f"B_{mouse_id}_CAM{channel_id}_{videodate}.mp4")
     ffoutput3 = f'{outputfile} >> {os.path.join(dir_serie, "ffmpeg.log")} 2>&1'                   # output file name
     subprocess.Popen(ffinput + ffoutput1 + ffoutput2 + ffoutput3, shell=True)
-    print("DEBUG "+ffinput+ffoutput1+ffoutput2+ffoutput3)
-    print(f"DEBUG {vf.get_formatted_datetime_now()}, <acquire_both> started with B_{mouse_id}_CAM{channel_id}_{videodate}.mp4")
+    # print("DEBUG "+ffinput+ffoutput1+ffoutput2+ffoutput3)
+    # print(f"DEBUG {vf.get_formatted_datetime_now()}, <acquire_both> started with B_{mouse_id}_CAM{channel_id}_{videodate}.mp4")
 
 
 def acquire_all(dir_serie, channel_id, mouse_id):
@@ -229,8 +223,8 @@ def acquire_all(dir_serie, channel_id, mouse_id):
     outputfile = os.path.join(vf.DIR_IN_PROGRESS, f"A_{mouse_id}_CAM{channel_id}_{videodate}.mp4")
     ffoutput3 = f'{outputfile} >> {os.path.join(dir_serie, "ffmpeg.log")} 2>&1'                   # output file name
     subprocess.Popen(ffinput + ffoutput1 + ffoutput2 + ffoutput3, shell=True)
-    print("DEBUG "+ffinput+ffoutput1+ffoutput2+ffoutput3)
-    print(f"DEBUG {vf.get_formatted_datetime_now()}, <acquire_all> started with A_{mouse_id}_CAM{channel_id}_{videodate}.mp4")
+    # print("DEBUG "+ffinput+ffoutput1+ffoutput2+ffoutput3)
+    # print(f"DEBUG {vf.get_formatted_datetime_now()}, <acquire_all> started with A_{mouse_id}_CAM{channel_id}_{videodate}.mp4")
 
 def start_acquisition(dir_serie, acquisition_choices, stop_hour, total_hours, end_date_format):
     """Start acquisition process of videos with user choices in list acquisition_choices, with following infos:
@@ -340,7 +334,7 @@ def infos_to_terminal(start_hour, stop_hour, duration, type_acquisition, nb_used
 
     print(f"DEBUG {vf.get_formatted_datetime_now()}, <infos_to_terminal> total_hours: {total_hours}")
     vf.TOTAL_VIDEO_FILES = total_hours * nb_used_cameras
-    print(Style.BRIGHT+ Fore.GREEN + f"###### VASD {vf.VASD_VERSION} ######")
+    print(Style.BRIGHT+ Fore.GREEN + f"######")
     print(Style.BRIGHT+ Fore.GREEN + f"{infos}")
 
     print(Style.BRIGHT+ Fore.GREEN + f"Total is {total_hours} hours of recording with {nb_used_cameras} camera(s) ({vf.TOTAL_VIDEO_FILES} video files will be created)")
@@ -359,7 +353,7 @@ def make_dirs(serie_name, acquis_choices):
 
     # Rename terminal window with serie date
     sys.stdout.write("\x1b]2;VASD v" + vf.VASD_VERSION + " serie " + seriedate + "\x07")
-    print(Style.BRIGHT+ Fore.GREEN + f"###### VASD {vf.VASD_VERSION} ######")
+    print(Style.BRIGHT+ Fore.GREEN + f"###### {vf.get_formatted_datetime_now()} ###### VASD {vf.VASD_VERSION} ######")
 
     if not os.path.exists(vf.DIR_IN_PROGRESS):
         os.makedirs(vf.DIR_IN_PROGRESS)
@@ -446,15 +440,15 @@ def master_stop_schedule(root, serie_name_entry, id_entry, test_cameras, cbox_ch
     if stop_all == 1:
         # manual acquisition stop, analysis will stop after 2h
         stop_analysis(7200)
-        print(Style.BRIGHT + Fore.RED + '######VASD ###### Acquisition is stopped by user, analysis will stop in 1 hour ######')
+        print(Style.BRIGHT + Fore.RED + f'###### {vf.get_formatted_datetime_now()} ######VASD ###### Acquisition is stopped by user, analysis will stop in 1 hour ######')
     elif stop_all == 2:
         # manual acquisition+analysis stop, analysis is stopped immediately
         stop_analysis(0)
-        print(Style.BRIGHT + Fore.RED + '###### VASD ###### Acquisition is stopped by user ######')
+        print(Style.BRIGHT + Fore.RED + f'###### {vf.get_formatted_datetime_now()} ###### VASD ###### Acquisition is stopped by user ######')
     elif stop_all == 3:
         # scheduling is finished, analysis will stop after 2h
         stop_analysis(7200)
-        print(Style.BRIGHT + Fore.RED + '###### VASD ###### SCHEDULED ACQUISITION IS FINISHED ######')
+        print(Style.BRIGHT + Fore.RED + f'###### {vf.get_formatted_datetime_now()} ###### VASD ###### SCHEDULED ACQUISITION IS FINISHED ######')
     print(Style.RESET_ALL)
     # Script is waiting for user entry, active or disable (shade) tkinter objects
     serie_name_entry.config(state='normal')
@@ -488,7 +482,7 @@ def master_schedule_run(root, dir_serie, start_hour, stop_hour, stop_before_hour
     def start_hourly_tasks(dir_serie, acquisition_choices, stop_hour, total_hours, end_date_format, type_acquisition):
         "Start immediately an acquisition and create an hourly scheduled job ('hourly-tasks')"
 
-        print(Style.BRIGHT + Fore.GREEN + '###### VASD ###### Start hourly tasks ######')
+        print(Style.BRIGHT + Fore.GREEN + f'###### {vf.get_formatted_datetime_now()} ###### VASD ###### Start hourly tasks ######')
         print(Style.RESET_ALL)
         # Start immediately first acquisition(s) and analysis
         start_analysis(dir_serie, total_hours)
@@ -509,7 +503,7 @@ def master_schedule_run(root, dir_serie, start_hour, stop_hour, stop_before_hour
         schedule.clear('hourly-tasks')
         print(f"DEBUG {vf.get_formatted_datetime_now()}, <clear_hourly_tasks>")
         if type_acquisition == 2:
-            print(Style.BRIGHT + Fore.RED + '###### Repeated acquisition, stop hourly acquisition ######')
+            print(Style.BRIGHT + Fore.RED + f'###### {vf.get_formatted_datetime_now()} ###### VASD Repeated acquisition, stop hourly acquisition ######')
             print(Style.RESET_ALL)
 
 
@@ -892,3 +886,4 @@ if __name__ == "__main__":
     vf.PROC_GUI = multiprocessing.Process(target=gui)
     vf.PROC_GUI.start()
     vf.PROC_GUI.join()
+    print("end of script")

@@ -6,8 +6,10 @@ import sys
 import csv                              # standard library
 import cv2                              # opencv-python 4.0.0
 from ffprobe import FFProbe
+import vasd_functions as vf
 
-# NO RETURNED VALUE FOR VASD USAGE (ON THE CONTRARY FROM SASDI)
+
+# NO RETURNED VALUE FOR VASD USAGE (ON THE CONTRARY TO SASDI)
 
 def one_video_analysis(arg):
     """ INPUT 1 tuple with fps, video path, video filename, list of ROI coordinates, video rank (1 based), total number of videos
@@ -20,13 +22,12 @@ def one_video_analysis(arg):
     # Parse arguments
     fps, video_path, video_filename, roi_coord, video_rank, video_total_nb = arg
     print(f"DEBUG input one_video_analysis(arg): {arg}")
-    fps = round(float(fps), 2)
     # add full path and filename
     current_video_fullpath = os.path.normpath(os.path.join(video_path, video_filename))
 
     # Print videorank, nbvideos, videoname
     fullpath, filename = os.path.split(current_video_fullpath)
-    print(f"{video_rank} / {video_total_nb} hours: analysing {filename} from {fullpath}")
+    print(f"{vf.get_formatted_datetime_now()}, Analysing file {video_rank} / {video_total_nb} : '{filename}'")
 
     nb_roi = len(roi_coord)
     # get each ROI(s) number of pixels in list roi_sizes
@@ -43,33 +44,30 @@ def one_video_analysis(arg):
         # nb_frames = number of frames in the currently analysed video file
         nb_frames = int(vidcap.get(cv2.CAP_PROP_FRAME_COUNT))
         # Get frame per second value of current video
-        cv2_fps = round(float(vidcap.get(cv2.CAP_PROP_FPS)), 2)
+        # fps = round(float(vidcap.get(cv2.CAP_PROP_FPS)), 2)
     except cv2.error as cv2_error:
-        print(f"Error reading informations from {video_filename}: {cv2_error}")
+        print(f"Cannot read video with opencv: {video_filename} -> {cv2_error}")
         return
-    # Use FFprobe parameters if wrong fps or wrong frame number or fps read with cv2 is different from saved fps
-    error_string = ""
-    if fps > 500:
-        error_string = f"fps>100: {fps}"
+    # Use FFprobe parameters if wrong frame number
     if nb_frames < 10:
-        error_string += f" frame number<10: {nb_frames}"
-    if cv2_fps != fps:
-        error_string += f" read opencv fps {cv2_fps} different from selected fps {fps}"
-    if error_string != "":
-        print(f"Error in video infos: {error_string}")
+        print(f"Video header read with opencv is wrong, frame number<10: {nb_frames},")
         try:
             metadata = FFProbe(current_video_fullpath)
             for stream in metadata.streams:
                 if stream.is_video():
                     ffprobe_duration = round(eval(stream.duration))
-                    ffprobe_fps = eval(stream.r_frame_rate)
-                    nb_frames = round(ffprobe_duration * ffprobe_fps)
-                    ffprobe_fps = round(ffprobe_fps, 2)
-                    print(f"Using ffprobe fps*duration: {ffprobe_fps} fps * {ffprobe_duration} s = {nb_frames} frames")
+                    # ffprobe_fps = eval(stream.r_frame_rate)
         except:
-            print(f"File analysis canceled, cannot read infos with ffprobe: {current_video_fullpath}")
+            print(f"File analysis canceled, invalid header infos: {current_video_fullpath}")
             return
-
+        else:
+            nb_frames = round(ffprobe_duration * fps)
+            if nb_frames > 10:
+                print(f"Using duration read with ffprobe: {ffprobe_duration} s for {current_video_fullpath}")
+                print(f"Calculated number of frames with user given fps ({fps} is : {nb_frames} frames")
+            else:
+                print(f"File analysis canceled, invalid header infos: {current_video_fullpath}")
+                return
     # Get first frame
     index_frame = 0
     nb_error = 0
