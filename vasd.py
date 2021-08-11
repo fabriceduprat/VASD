@@ -20,10 +20,10 @@ import vasd_functions as vf
 def analysis(dir_serie):
     "Analyse video files present in vf.DIR_IN_PROGRESS and move files (videos and CSV files) to dir_serie"
 
-    print(f"DEBUG PROC_ANALYSIS Is alive in analysis? {vf.PROC_ANALYSIS.is_alive()}")
+    #print(f"DEBUG PROC_ANALYSIS Is alive in analysis? {vf.PROC_ANALYSIS.is_alive()}")
     while True:
-        print(f"DEBUG PROC_ANALYSIS Is alive in analysis? {vf.PROC_ANALYSIS.is_alive()}")
-        print(f"DEBUG {vf.get_formatted_datetime_now()}, <analysis> while loop starts")
+        #print(f"DEBUG PROC_ANALYSIS Is alive in analysis? {vf.PROC_ANALYSIS.is_alive()}")
+        #print(f"DEBUG {vf.get_formatted_datetime_now()}, <analysis> while loop starts")
         all_files_ready = [] # List of all files (videos, csv, and wav files) ready to be transfered
         files_size_1 = [] # List of the videos size after first check
         files_size_2 = [] # List of the videos size after second check
@@ -43,7 +43,7 @@ def analysis(dir_serie):
             vidcap = None
             size_change = files_size_2[index] - files_size_1[index]
             csv_exists = os.path.exists(os.path.join(vf.DIR_IN_PROGRESS, file+".csv"))
-            print(f"DEBUG {vf.get_formatted_datetime_now()}, <analysis> file[{index}]: {file} -> size_change: {size_change} csv_exist: {csv_exists}, len files_size_1:{len(files_size_1)}, files_size_2:{len(files_size_2)}")
+            #print(f"DEBUG {vf.get_formatted_datetime_now()}, <analysis> file[{index}]: {file} -> size_change: {size_change} csv_exist: {csv_exists}, len files_size_1:{len(files_size_1)}, files_size_2:{len(files_size_2)}")
             # If video file creation is finished (size1=size2) and not already analysed then add to list_videos_to_analyse
             if (file.endswith(".mp4") and size_change == 0 and not csv_exists):
                 try:
@@ -233,9 +233,9 @@ def start_acquisition(dir_serie, acquisition_choices, stop_hour, total_hours, en
         [2] mouse id
     """
 
-    print(f"DEBUG {vf.get_formatted_datetime_now()}, <start_acquisition> job list:")
-    for job in schedule.jobs:
-        print(f"       DEBUG {job}")
+    #print(f"DEBUG {vf.get_formatted_datetime_now()}, <start_acquisition> job list:")
+    #for job in schedule.jobs:
+    #    print(f"       DEBUG {job}")
 
     myprocess = []
     vf.CURRENT_RECORD_INDEX = vf.CURRENT_RECORD_INDEX + 1
@@ -256,7 +256,7 @@ def start_acquisition(dir_serie, acquisition_choices, stop_hour, total_hours, en
     # Start all the ffmpeg processes for video acquisition
     for index, _ in enumerate(acquisition_choices):
         myprocess[index].start()
-        print(f"DEBUG {vf.get_formatted_datetime_now()}, <start_acquisition> Start process # {index}")
+        #print(f"DEBUG {vf.get_formatted_datetime_now()}, <start_acquisition> Start process # {index}")
 
     # Wait for all ffmpeg processes to complete
     for index, _ in enumerate(acquisition_choices):
@@ -300,7 +300,7 @@ def store_choices(cbox_channel, id_entry, var_radio, cbox_schedule):
         stop_before_hour = vf.SCHED_HOURS[index_stop_hour - 1]
     # Get duration of acquisition
     duration = cbox_schedule[2].get()
-    print(f"DEBUG {vf.get_formatted_datetime_now()}, <store_choices> acquisition choices: {acquisition_choices}")
+    #print(f"DEBUG {vf.get_formatted_datetime_now()}, <store_choices> acquisition choices: {acquisition_choices}")
     return acquisition_choices, int(start_hour), int(stop_hour), int(stop_before_hour), int(duration), int(type_acquisition)
 
 
@@ -332,7 +332,7 @@ def infos_to_terminal(start_hour, stop_hour, duration, type_acquisition, nb_used
             total_hours = duration * (24 - start_hour + stop_hour)
         infos = f"REPEATED ACQUISITION from {start_hour}:00 to {stop_hour}:00 will start the {start_date.strftime('%d/%m/%Y')} and finish the {end_date.strftime('%d/%m/%Y')}"
 
-    print(f"DEBUG {vf.get_formatted_datetime_now()}, <infos_to_terminal> total_hours: {total_hours}")
+    #print(f"DEBUG {vf.get_formatted_datetime_now()}, <infos_to_terminal> total_hours: {total_hours}")
     vf.TOTAL_VIDEO_FILES = total_hours * nb_used_cameras
     print(Style.BRIGHT+ Fore.GREEN + f"######")
     print(Style.BRIGHT+ Fore.GREEN + f"{infos}")
@@ -409,7 +409,7 @@ def master_start_schedule(root, serie_name_entry, id_entry, test_cameras, cbox_c
     # Print infos to terminal
     total_hours, end_date_format = infos_to_terminal(start_hour, stop_hour, duration, type_acquisition, nb_used_cameras)
 
-    print(f"DEBUG {vf.get_formatted_datetime_now()} <master_start_schedule>")
+    #print(f"DEBUG {vf.get_formatted_datetime_now()} <master_start_schedule>")
 
     # Active or disable (shade) tkinter objects during script running
     serie_name_entry.config(state=DISABLED)
@@ -489,7 +489,7 @@ def master_schedule_run(root, dir_serie, start_hour, stop_hour, stop_before_hour
         start_acquisition(dir_serie, acquisition_choices, stop_hour, total_hours, end_date_format)
         # Add a schedule with acquisition(s) every hour (HOURLY-TASK) whatever choice exists
         schedule.every(60).minutes.at(':00').do(lambda: start_acquisition(dir_serie, acquisition_choices, stop_hour, total_hours, end_date_format)).tag('hourly-tasks')
-        print(f"DEBUG {vf.get_formatted_datetime_now()}, schedule.every({60}).minutes.at(':00').do(lambda: start_acquisition({dir_serie}, {acquisition_choices}, {stop_hour}, {total_hours}, {end_date_format})).tag('hourly-tasks')")
+        #print(f"DEBUG {vf.get_formatted_datetime_now()}, schedule.every({60}).minutes.at(':00').do(lambda: start_acquisition({dir_serie}, {acquisition_choices}, {stop_hour}, {total_hours}, {end_date_format})).tag('hourly-tasks')")
         # If continuous acquisition then cancel initial task to avoid rescheduling everyday
         if type_acquisition == 1:
             # print("DEBUG <start_hourly_tasks> > clear initial task")
@@ -501,7 +501,7 @@ def master_schedule_run(root, dir_serie, start_hour, stop_hour, stop_before_hour
 
         # clear scheduled jobs with tag 'hourly-tasks'
         schedule.clear('hourly-tasks')
-        print(f"DEBUG {vf.get_formatted_datetime_now()}, <clear_hourly_tasks>")
+        #print(f"DEBUG {vf.get_formatted_datetime_now()}, <clear_hourly_tasks>")
         if type_acquisition == 2:
             print(Style.BRIGHT + Fore.RED + f'###### {vf.get_formatted_datetime_now()} ###### VASD Repeated acquisition, stop hourly acquisition ######')
             print(Style.RESET_ALL)
@@ -513,7 +513,7 @@ def master_schedule_run(root, dir_serie, start_hour, stop_hour, stop_before_hour
         schedule.clear('daily-tasks')
         master_stop_schedule(root, serie_name_entry, id_entry, test_cameras, cbox_channel, cbox_schedule, button_start_sched, button_stop_acq,
                              button_stop_all, button_rad_continuous, button_rad_repeated, 3)
-        print(f"DEBUG {vf.get_formatted_datetime_now()}, <clear_daily_tasks> cancel all daily tasks, END OF SCHEDULING")
+        #print(f"DEBUG {vf.get_formatted_datetime_now()}, <clear_daily_tasks> cancel all daily tasks, END OF SCHEDULING")
         return schedule.CancelJob       # cancel itself to be executed only once
 
     start_hour_padded = str(stop_before_hour).zfill(2)
@@ -523,38 +523,38 @@ def master_schedule_run(root, dir_serie, start_hour, stop_hour, stop_before_hour
         # START: start hourly acquisition at start time (='initial-task')
         schedule.every().day.at(str(start_hour).zfill(2) + ":00:00").do(
             lambda: start_hourly_tasks(dir_serie, acquisition_choices, stop_hour, total_hours, end_date_format, type_acquisition))
-        print(f"DEBUG {vf.get_formatted_datetime_now()}, <master_schedule_run> SCHEDULE START OF CONTINUOUS ACQUISITION:")
-        print(f"schedule.every().day.at({str(start_hour).zfill(2) + ':00:00'}).do(lambda: start_hourly_tasks({dir_serie}, {acquisition_choices}, {stop_hour}, {total_hours}, {end_date_format}, {type_acquisition})).tag('initial-task')")
+        #print(f"DEBUG {vf.get_formatted_datetime_now()}, <master_schedule_run> SCHEDULE START OF CONTINUOUS ACQUISITION:")
+        #print(f"DEBUG schedule.every().day.at({str(start_hour).zfill(2) + ':00:00'}).do(lambda: start_hourly_tasks({dir_serie}, {acquisition_choices}, {stop_hour}, {total_hours}, {end_date_format}, {type_acquisition})).tag('initial-task')")
         schedule.every(int(duration)).days.at(str(stop_before_hour).zfill(2) + ':59:00').do(
             lambda: clear_hourly_tasks(type_acquisition)).tag('daily-tasks')
-        print(f"DEBUG {vf.get_formatted_datetime_now()}, <master_schedule_run> continuous, FINAL STOP, schedule.every(int({duration})).days. at({str(stop_before_hour).zfill(2) + ':59:00'}) do clear_hourly_tasks({type_acquisition}).tag('daily-tasks')")
+        #print(f"DEBUG {vf.get_formatted_datetime_now()}, <master_schedule_run> continuous, FINAL STOP, schedule.every(int({duration})).days. at({str(stop_before_hour).zfill(2) + ':59:00'}) do clear_hourly_tasks({type_acquisition}).tag('daily-tasks')")
         schedule.every(int(duration)).days.at(str(stop_before_hour).zfill(2) + ':59:40').do(
             lambda: clear_daily_tasks(root, serie_name_entry, id_entry, test_cameras, cbox_channel, cbox_schedule, button_start_sched, button_stop_acq, button_stop_all, button_rad_continuous, button_rad_repeated))
-        print(f"DEBUG {vf.get_formatted_datetime_now()}, <master_schedule_run> continuous, FINAL STOP, schedule.every(int({duration})).days. at({str(stop_before_hour).zfill(2) + ':59:40'}) do clear_daily_tasks(tkinter objects))")
+        #print(f"DEBUG {vf.get_formatted_datetime_now()}, <master_schedule_run> continuous, FINAL STOP, schedule.every(int({duration})).days. at({str(stop_before_hour).zfill(2) + ':59:40'}) do clear_daily_tasks(tkinter objects))")
 
     # REPEATED ACQUISITION
     if type_acquisition == 2:
-        print(f"DEBUG {vf.get_formatted_datetime_now()}, <master_schedule_run> SCHEDULE DAILY START OF REPEATED ACQUISITION:")
+        #print(f"DEBUG {vf.get_formatted_datetime_now()}, <master_schedule_run> SCHEDULE DAILY START OF REPEATED ACQUISITION:")
         # DAILY START : start hourly acquisition every day at start time (= daily-tasks)
         schedule.every().day.at(str(start_hour).zfill(2) + ":00:00").do(
             lambda: start_hourly_tasks(dir_serie, acquisition_choices, stop_hour, total_hours, end_date_format, type_acquisition)).tag('daily-tasks')
-        print(f"schedule.every().day.at({str(start_hour).zfill(2) + ':00:00'}).do(lambda: start_hourly_tasks({dir_serie}, {acquisition_choices}, {stop_hour}, {total_hours}, {end_date_format}, {type_acquisition})).tag('daily-tasks')")
+        #print(f"schedule.every().day.at({str(start_hour).zfill(2) + ':00:00'}).do(lambda: start_hourly_tasks({dir_serie}, {acquisition_choices}, {stop_hour}, {total_hours}, {end_date_format}, {type_acquisition})).tag('daily-tasks')")
         # DAILY STOP: every days at stop time stop the hourly-tasks and analysis (= daily-tasks)
         schedule.every().day.at(str(stop_before_hour).zfill(2) + ':59:00').do(
             lambda: clear_hourly_tasks(type_acquisition)).tag('daily-tasks')
-        print(f"DEBUG {vf.get_formatted_datetime_now()}, <master_schedule_run> repeated, DAILY STOP, schedule.every().day. at({str(stop_before_hour) + ':59:00'}) do clear_hourly_tasks({type_acquisition}).tag('daily-tasks')")
+        #print(f"DEBUG {vf.get_formatted_datetime_now()}, <master_schedule_run> repeated, DAILY STOP, schedule.every().day. at({str(stop_before_hour) + ':59:00'}) do clear_hourly_tasks({type_acquisition}).tag('daily-tasks')")
         schedule.every().day.at(str(stop_before_hour).zfill(2) + ':59:20').do(
             lambda: stop_analysis(7200)).tag('daily-tasks')
-        print(f"DEBUG {vf.get_formatted_datetime_now()}, <master_schedule_run> repeated, DAILY STOP, schedule.every().day. at({str(stop_before_hour) + ':59:20'}) do stop_analysis(7200)).tag('daily-tasks')")
+        #print(f"DEBUG {vf.get_formatted_datetime_now()}, <master_schedule_run> repeated, DAILY STOP, schedule.every().day. at({str(stop_before_hour) + ':59:20'}) do stop_analysis(7200)).tag('daily-tasks')")
         schedule.every(int(duration)).days.at(str(stop_before_hour).zfill(2) + ':59:40').do(
             lambda: clear_daily_tasks(root, serie_name_entry, id_entry, test_cameras, cbox_channel, cbox_schedule, button_start_sched, button_stop_acq, button_stop_all, button_rad_continuous, button_rad_repeated))
-        print(f"DEBUG {vf.get_formatted_datetime_now()}, <master_schedule_run> repeated, FINAL STOP, schedule.every(int({duration})).days at({str(stop_before_hour) + ':59:40'}) do clear_daily_tasks(tkinter objects) )")
+        #print(f"DEBUG {vf.get_formatted_datetime_now()}, <master_schedule_run> repeated, FINAL STOP, schedule.every(int({duration})).days at({str(stop_before_hour) + ':59:40'}) do clear_daily_tasks(tkinter objects) )")
 
     #  Listen to all jobs and start them on scheduled time
     while schedule.jobs:
         schedule.run_pending()
         time.sleep(0.1)
-    print(f"DEBUG {vf.get_formatted_datetime_now()}, while loop finished")
+    #print(f"DEBUG {vf.get_formatted_datetime_now()}, while loop finished")
 
 
 def gui():

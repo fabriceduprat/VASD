@@ -21,7 +21,7 @@ def one_video_analysis(arg):
     sys.stdout = sys.__stdout__
     # Parse arguments
     fps, video_path, video_filename, roi_coord, video_rank, video_total_nb = arg
-    print(f"DEBUG input one_video_analysis(arg): {arg}")
+    #print(f"DEBUG input one_video_analysis(arg): {arg}")
     # add full path and filename
     current_video_fullpath = os.path.normpath(os.path.join(video_path, video_filename))
 
